@@ -30,7 +30,6 @@ yarn-error.*
 
 # local env files
 .env*.local
-./src/constants/env.js
 
 # typescript
 *.tsbuildinfo
@@ -39,3 +38,4 @@ yarn-error.*
 authentication/
 
 package-lock.json
+src/constants/env.js
