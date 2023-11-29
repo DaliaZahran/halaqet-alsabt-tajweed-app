@@ -2,6 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { collection, getDocs } from "firebase/firestore";
+import { getStorage, ref, listAll, getDownloadURL } from 'firebase/storage';
 
 import {
   FIREBASE_API_KEY,
@@ -81,4 +82,38 @@ const fetchExams = async () => {
   }
 };
 
-export { registerUser, signInUser, fetchExams };
+// const fetchQuizDataFromStorage = async (quizId) => {
+//   try {
+//     const storage = getStorage();
+//     const url = await getDownloadURL(ref(storage, `quizData/${quizId}.json`));
+//     const response = await fetch(url);
+//     return response.json();
+//   } catch (error) {
+//     console.error(`Error fetching quiz data for ${quizId}:`, error);
+//     return null;
+//   }
+// };
+
+const fetchAllQuizzesFromStorage = async () => {
+  const storage = getStorage(app);
+  const directoryPath = 'Exams/';
+
+  try {
+    const filesList = await listAll(ref(storage, directoryPath));
+
+    const jsonDataArray = [];
+    for (const fileRef of filesList.items) {
+      const downloadURL = await getDownloadURL(fileRef);
+      const response = await fetch(downloadURL);
+      const jsonData = await response.json();
+      jsonDataArray.push(jsonData);
+    }
+
+    return jsonDataArray;
+  } catch (error) {
+    console.error('Error fetching or parsing JSON data:', error);
+    return null;
+  }
+};
+
+export { registerUser, signInUser, fetchExams, fetchAllQuizzesFromStorage };

@@ -21,6 +21,6 @@ const styles = StyleSheet.create({
   },
   question: {
     fontSize: 23,
-    fontWeight: 500,
+    fontWeight: '500',
   },
 });

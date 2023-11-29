@@ -19,5 +19,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginVertical: 10,
   },
-  answer: { fontSize: 20, fontWeight: 500 },
+  answer: { 
+    fontSize: 20,
+    fontWeight: '500' 
+  },
 });
