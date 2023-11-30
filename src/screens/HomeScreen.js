@@ -1,12 +1,28 @@
 //use rnfes -> es7 code snippets to populate file structure
-import { FlatList, SafeAreaView, StyleSheet, Text, View } from "react-native";
+import { FlatList, SafeAreaView, StyleSheet, Text, View, Button } from "react-native";
 import React, { useState, useEffect } from "react";
 
 import { categories } from "../constants/dummy_data";
 import Category from "../components/Category";
-import {fetchAllQuizzesFromStorage } from "../services/firebaseService"; // Import the fetchExams function
+import { fetchAllQuizzesFromStorage } from "../services/firebaseService"; // Import the fetchExams function
 
-const HomeScreen = () => {
+import { useDispatch, useSelector } from 'react-redux';
+import { signOut } from '../redux/actions/authActions'; // Update with the correct path
+
+
+const HomeScreen = ({ navigation }) => {
+
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.auth.user);
+
+  const handleSignOut = () => {
+    // Perform sign-out logic and dispatch the signOut action
+    // Update with your sign-out logic
+    dispatch(signOut());
+
+    navigation.navigate('SignUp');
+  };
+
   const [exams, setExams] = useState([]);
 
   useEffect(() => {
@@ -26,13 +42,21 @@ const HomeScreen = () => {
 
   return (
     <SafeAreaView>
+      {user ? (
+        <>
+          <Text>Welcome, {user.email}!</Text>
+          <Button title="Sign Out" onPress={handleSignOut} />
+        </>
+      ) : (
+        <Text>Not signed in</Text>
+      )}
       <FlatList
         data={categories}
         renderItem={({ item }) => (
           <Category image={item.image} title={item.title} />
         )}
         keyExtractor={(item) => item.id}
-        // showsVerticalScrollIndicator={false}
+      // showsVerticalScrollIndicator={false}
       />
       <FlatList
         data={exams}
@@ -61,7 +85,7 @@ const HomeScreen = () => {
           </View>
         )}
         keyExtractor={(item, index) => (item.id ? item.id.toString() : index.toString())}
-        // showsVerticalScrollIndicator={false}
+      // showsVerticalScrollIndicator={false}
       />
     </SafeAreaView>
   );

@@ -1,6 +1,11 @@
+// actions/authActions.js
+// Assuming that `user` is an object with serializable properties
 export const signIn = (user) => ({
   type: "SIGN_IN",
-  payload: user,
+  payload: {
+    email: user.email, // Replace with the actual property name in your user object
+    // Other serializable properties from the user object
+  },
 });
 
 export const signOut = () => ({
