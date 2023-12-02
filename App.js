@@ -6,6 +6,7 @@ import HomeScreen from "./src/screens/HomeScreen";
 import SignInScreen from "./src/screens/SignInScreen";
 import SignUpScreen from "./src/screens/SignUpScreen";
 import ExamScreen from './src/screens/ExamScreen';
+import ExamResultScreen from './src/screens/ExamResultScreen';
 // import QuizScreen from "./src/screens/QuizScreen";
 
 
@@ -34,6 +35,7 @@ export default function App() {
             <Stack.Screen name="Home" component={HomeScreen} />
             <Stack.Screen name="SignIn" component={SignInScreen} />
             <Stack.Screen name="Exam" component={ExamScreen} />
+            <Stack.Screen name="Result" component={ExamResultScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>

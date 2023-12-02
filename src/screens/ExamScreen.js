@@ -1,31 +1,58 @@
 // ExamScreen.js
 import React, { useState } from 'react';
 import { View, Text, FlatList, StyleSheet, TouchableOpacity, Button } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 import Answer from "../components/Answer";
 import Question from "../components/Question";
 
 const ExamScreen = ({ route }) => {
   const { exam } = route.params;
+  const navigation = useNavigation(); // Hook for navigation
 
   const [selectedAnswers, setSelectedAnswers] = useState(Array(exam.questions.length).fill(null));
 
   const handleAnswerSelection = (questionIndex, choiceIndex) => {
-    console.log(`Selected answer for question ${questionIndex}: choice ${choiceIndex}`);
     setSelectedAnswers(prevState => {
-      console.log('>> old selectedAnswers:', prevState);
       const newSelectedAnswers = [...prevState];
       newSelectedAnswers[questionIndex] = choiceIndex;
-      console.log('>> new selectedAnswers:', newSelectedAnswers);
       return newSelectedAnswers;
     });
   };
 
+  const calculateScore = () => {
+    const totalQuestions = exam.questions.length;
+    let correctAnswers = 0;
+
+    for (let i = 0; i < totalQuestions; i++) {
+      const question = exam.questions[i];
+  
+      // Assuming selectedAnswer is an array with the user's selected answers
+      const selectedAnswer = selectedAnswers[i];
+
+
+  
+      // Check if the selected answer is correct
+      if (question.choices[selectedAnswer] == question.correctChoice) {
+        correctAnswers++;
+      }
+    }
+
+    // Calculate the percentage of correct answers
+    const scorePercentage = (correctAnswers / totalQuestions) * 100;
+    return `${scorePercentage.toFixed(2)}%`;
+  };
+
   const handleSubmission = () => {
-    console.log('>> Selected answers to submit: ', selectedAnswers);
-    // Implement your logic for handling the submission
-    // For example, you can compare selectedAnswers with correct answers
-    // and update the UI accordingly
+    // Calculate score, correct answers, etc.
+    const score = calculateScore(); // Implement your scoring logic
+
+    // Navigate to the result screen with necessary data
+    navigation.navigate('Result', {
+      score,
+      exam,
+      selectedAnswers,
+    });
   };
 
   return (
