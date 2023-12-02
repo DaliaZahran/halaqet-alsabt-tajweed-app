@@ -5,6 +5,7 @@ import { StyleSheet, View } from "react-native";
 import HomeScreen from "./src/screens/HomeScreen";
 import SignInScreen from "./src/screens/SignInScreen";
 import SignUpScreen from "./src/screens/SignUpScreen";
+import ExamScreen from './src/screens/ExamScreen';
 // import QuizScreen from "./src/screens/QuizScreen";
 
 
@@ -32,6 +33,7 @@ export default function App() {
             <Stack.Screen name="SignUp" component={SignUpScreen} />
             <Stack.Screen name="Home" component={HomeScreen} />
             <Stack.Screen name="SignIn" component={SignInScreen} />
+            <Stack.Screen name="Exam" component={ExamScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>

@@ -61,28 +61,10 @@ const HomeScreen = ({ navigation }) => {
       <FlatList
         data={exams}
         renderItem={({ item }) => (
-          <View style={styles.examContainer}>
-            <Text style={styles.examTitle}>{item.title}</Text>
-            {/* Render questions for each exam */}
-            <FlatList
-              data={item.questions}
-              renderItem={({ item: question }) => (
-                <View style={styles.questionContainer}>
-                  <Text style={styles.questionBody}>{question.questionBody}</Text>
-                  <FlatList
-                    data={question.choices}
-                    renderItem={({ item: choice, index }) => (
-                      <Text key={index} style={styles.choiceItem}>
-                        {choice}
-                      </Text>
-                    )}
-                    keyExtractor={(choice, index) => index.toString()}
-                  />
-                </View>
-              )}
-              keyExtractor={(question, index) => index.toString()}
-            />
-          </View>
+          <Button
+            title={item.title}
+            onPress={() => navigation.navigate('Exam', { exam: item })}
+          />
         )}
         keyExtractor={(item, index) => (item.id ? item.id.toString() : index.toString())}
       // showsVerticalScrollIndicator={false}
