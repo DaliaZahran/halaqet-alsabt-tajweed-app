@@ -6,21 +6,14 @@ import { categories } from "../constants/dummy_data";
 import Category from "../components/Category";
 import { fetchAllQuizzesFromStorage } from "../services/firebaseService"; // Import the fetchExams function
 
-import { useDispatch, useSelector } from 'react-redux';
-import { signOut } from '../redux/actions/authActions'; // Update with the correct path
-
+import { useSelector } from 'react-redux';
 
 const HomeScreen = ({ navigation }) => {
 
-  const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
 
-  const handleSignOut = () => {
-    // Perform sign-out logic and dispatch the signOut action
-    // Update with your sign-out logic
-    dispatch(signOut());
-
-    navigation.navigate('SignUp');
+  const handleProfilePage = () => {
+    navigation.navigate('Profile');
   };
 
   const [exams, setExams] = useState([]);
@@ -44,8 +37,8 @@ const HomeScreen = ({ navigation }) => {
     <SafeAreaView>
       {user ? (
         <>
-          <Text>Welcome, {user.email}!</Text>
-          <Button title="Sign Out" onPress={handleSignOut} />
+          <Text>Welcome, {user.name}!</Text>
+          <Button title="My Profile" onPress={handleProfilePage} />
         </>
       ) : (
         <Text>Not signed in</Text>
