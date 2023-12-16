@@ -13,11 +13,8 @@ export default Answer;
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "yellow",
-    padding: 10,
     alignItems: "center",
     justifyContent: "center",
-    marginVertical: 10,
   },
   answer: { 
     fontSize: 20,

@@ -31,7 +31,11 @@ export default function App() {
   return (
     <Provider store={store}>
       <NavigationContainer>
-        <Stack.Navigator>
+      <Stack.Navigator
+          screenOptions={{
+            headerShown: false, // Set this option to hide the header for all screens
+          }}
+        >
             <Stack.Screen name="SignUp" component={SignUpScreen} />
             <Stack.Screen name="Home" component={HomeScreen} />
             <Stack.Screen name="SignIn" component={SignInScreen} />

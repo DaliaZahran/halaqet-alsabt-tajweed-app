@@ -13,9 +13,8 @@ export default Question;
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "pink",
-    height: 250,
     padding: 10,
+    marginBottom: 50,
     alignItems: "center",
     justifyContent: "center",
   },

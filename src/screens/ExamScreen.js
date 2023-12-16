@@ -1,21 +1,29 @@
-// ExamScreen.js
-import React, { useState } from 'react';
+import React from 'react';
 import { View, Text, FlatList, StyleSheet, TouchableOpacity, Button } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-import Answer from "../components/Answer";
-import Question from "../components/Question";
+import Answer from '../components/Answer';
+import Question from '../components/Question';
+
+const ProgressBarBubbles = ({ totalQuestions, currentQuestion }) => {
+  const bubbles = Array.from({ length: totalQuestions }, (_, index) => (
+    <View key={index} style={[styles.bubble, index === currentQuestion ? styles.activeBubble : null]} />
+  ));
+
+  return <View style={styles.progressBar}>{bubbles}</View>;
+};
 
 const ExamScreen = ({ route }) => {
   const { exam } = route.params;
-  const navigation = useNavigation(); // Hook for navigation
+  const navigation = useNavigation();
 
-  const [selectedAnswers, setSelectedAnswers] = useState(Array(exam.questions.length).fill(null));
+  const [currentQuestion, setCurrentQuestion] = React.useState(0);
+  const [selectedAnswers, setSelectedAnswers] = React.useState(Array(exam.questions.length).fill(null));
 
-  const handleAnswerSelection = (questionIndex, choiceIndex) => {
-    setSelectedAnswers(prevState => {
+  const handleAnswerSelection = (choiceIndex) => {
+    setSelectedAnswers((prevState) => {
       const newSelectedAnswers = [...prevState];
-      newSelectedAnswers[questionIndex] = choiceIndex;
+      newSelectedAnswers[currentQuestion] = choiceIndex;
       return newSelectedAnswers;
     });
   };
@@ -26,28 +34,19 @@ const ExamScreen = ({ route }) => {
 
     for (let i = 0; i < totalQuestions; i++) {
       const question = exam.questions[i];
-  
-      // Assuming selectedAnswer is an array with the user's selected answers
       const selectedAnswer = selectedAnswers[i];
 
-
-  
-      // Check if the selected answer is correct
-      if (question.choices[selectedAnswer] == question.correctChoice) {
+      if (question.choices[selectedAnswer] === question.correctChoice) {
         correctAnswers++;
       }
     }
 
-    // Calculate the percentage of correct answers
     const scorePercentage = (correctAnswers / totalQuestions) * 100;
     return `${scorePercentage.toFixed(2)}%`;
   };
 
   const handleSubmission = () => {
-    // Calculate score, correct answers, etc.
-    const score = calculateScore(); // Implement your scoring logic
-
-    // Navigate to the result screen with necessary data
+    const score = calculateScore();
     navigation.navigate('Result', {
       score,
       exam,
@@ -55,60 +54,137 @@ const ExamScreen = ({ route }) => {
     });
   };
 
+  const handleNextQuestion = () => {
+    if (currentQuestion < exam.questions.length - 1) {
+      setCurrentQuestion((prevQuestion) => prevQuestion + 1);
+    }
+  };
+
+  const handlePreviousQuestion = () => {
+    if (currentQuestion > 0) {
+      setCurrentQuestion((prevQuestion) => prevQuestion - 1);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.examTitle}>{exam.title}</Text>
-      <FlatList
-        data={exam.questions}
-        renderItem={({ item, index: questionIndex }) => (
-          <View style={styles.questionContainer}>
-            <Question question={item.questionBody}/>
-            <FlatList
-                data={item.choices}
+      <View>
+        <ProgressBarBubbles totalQuestions={exam.questions.length} currentQuestion={currentQuestion} />
+        <View style={styles.rowContainer}>
+          <TouchableOpacity onPress={handlePreviousQuestion} disabled={currentQuestion === 0} style={{ flex: 1 }}>
+            <Text style={[styles.navigationText, { color: currentQuestion === 0 ? '#dbd8e3' : 'black' }]}>{'<'}</Text>
+          </TouchableOpacity>
+          <View style={{ flex: 7 }}>
+            <View style={styles.questionContainer}>
+              <Question question={exam.questions[currentQuestion].questionBody}/>
+              <FlatList
+                data={exam.questions[currentQuestion].choices}
                 renderItem={({ item: choice, index: choiceIndex }) => (
                   <TouchableOpacity
-                    onPress={() => handleAnswerSelection(questionIndex, choiceIndex)}
+                    onPress={() => handleAnswerSelection(choiceIndex)}
                     style={[
                       styles.choiceContainer,
-                      selectedAnswers[questionIndex] === choiceIndex ? styles.selectedAnswers : null,
+                      selectedAnswers[currentQuestion] === choiceIndex ? styles.selectedAnswers : null,
                     ]}
                   >
                     <Answer answer={choice} index={choiceIndex} />
                   </TouchableOpacity>
                 )}
                 keyExtractor={(choice, choiceIndex) => choiceIndex.toString()}
-            />
+              />
+            </View>
           </View>
-        )}
-        keyExtractor={(question, index) => index.toString()}
-      />
-    <Button title="Submit" onPress={handleSubmission} />
+          <TouchableOpacity onPress={handleNextQuestion} disabled={currentQuestion === exam.questions.length - 1} style={{ flex: 1 }}>
+            <Text style={[styles.navigationText, { color: currentQuestion === exam.questions.length - 1 ? '#dbd8e3' : 'black' }]}>{'>'}</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+      <TouchableOpacity
+        style={styles.submitButton}
+        onPress={handleSubmission}
+      >
+        <Text style={styles.submitButtonText}>Submit</Text>
+      </TouchableOpacity>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    padding: 16,
+    flex:1,
+    paddingBottom: 50,
+    paddingTop:60,
+    paddingHorizontal: 16,
+    justifyContent: 'space-between', // Align content vertically
   },
   examTitle: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 16,
   },
+  progressBar: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    margin: 20,
+  },
+  bubble: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: '#3498db',
+    marginHorizontal: 5,
+  },
+  activeBubble: {
+    backgroundColor: '#2ecc71',
+  },
   questionContainer: {
-    marginBottom: 16,
+    padding: 16,
+    marginHorizontal: 15,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  rowContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   choiceContainer: {
-    backgroundColor: 'white', // Default background color for choices
+    backgroundColor: 'white',
     padding: 10,
     alignItems: 'center',
     justifyContent: 'center',
-    marginVertical: 10,
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: '#3498db', 
+    marginVertical: 10, 
   },
   selectedAnswers: {
-    backgroundColor: 'black', // Default background color for choices
+    borderColor: '#2ecc71', 
+    backgroundColor: '#c1f2bc',
+  },
+  navigationText: {
+    fontSize: 50,
+    color: 'black',
+  },
+  submitButton: {
+    alignSelf: 'center',
+    backgroundColor: '#3498db',
+    borderRadius: 30,
+    paddingVertical: 15,
+    paddingHorizontal: 120,
+    marginVertical: 20,
+  },
+  submitButtonText: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
 });
 
