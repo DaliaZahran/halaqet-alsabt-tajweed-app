@@ -1,0 +1,16 @@
+{
+    "title": "Quiz 1",
+    "questions": [
+      {
+        "questionBody": "What is ...",
+        "choices": ["A", "B", "C", "D"],
+        "correctChoice": "A"
+      },
+      {
+        "questionBody": "How to ...",
+        "choices": ["Option 1", "Option 2", "Option 3", "Option 4"],
+        "correctChoice": "Option 2"
+      }
+    ]
+  }
+  
