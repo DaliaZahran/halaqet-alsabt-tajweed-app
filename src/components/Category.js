@@ -1,12 +1,22 @@
-import { StyleSheet, Text, View, Image } from "react-native";
-import React from "react";
+import { StyleSheet, Text, View, Image, Pressable } from "react-native";
+import React, { useState, useEffect } from "react";
+import { useNavigation } from "@react-navigation/native";
 
 const Category = (props) => {
+  const [exam, setExam] = useState(props.examCategory);
+  const navigation = useNavigation();
+
+  const goToExam = () => {
+    navigation.navigate("Exam", { examId: props.id });
+  };
   return (
-    <View style={styles.container}>
-      <Image source={props.image} style={styles.image} />
-      <Text style={styles.title}>{props.title}</Text>
-    </View>
+    <Pressable style={styles.container} onPress={goToExam}>
+      <Image
+        source={require("../assets/images/favicon.png")}
+        style={styles.image}
+      />
+      <Text style={styles.title}>{exam.title}</Text>
+    </Pressable>
   );
 };
 

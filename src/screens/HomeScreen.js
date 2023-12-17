@@ -1,19 +1,25 @@
 //use rnfes -> es7 code snippets to populate file structure
-import { FlatList, SafeAreaView, StyleSheet, Text, View, Button } from "react-native";
+import {
+  FlatList,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  View,
+  Button,
+} from "react-native";
 import React, { useState, useEffect } from "react";
 
 import { categories } from "../constants/dummy_data";
 import Category from "../components/Category";
 import { fetchAllQuizzesFromStorage } from "../services/firebaseService"; // Import the fetchExams function
 
-import { useSelector } from 'react-redux';
+import { useSelector } from "react-redux";
 
 const HomeScreen = ({ navigation }) => {
-
   const user = useSelector((state) => state.auth.user);
 
   const handleProfilePage = () => {
-    navigation.navigate('Profile');
+    navigation.navigate("Profile");
   };
 
   const [exams, setExams] = useState([]);
@@ -33,6 +39,26 @@ const HomeScreen = ({ navigation }) => {
     loadExams();
   }, []); // Run once when the component mounts
 
+  // Dalia Version
+  // const HomeScreen = () => {
+  /** Next lines are commented to avoid calling the firebase server alot while development
+   * TODO: uncomment to use firebase server after installing a local fake server
+   */
+  // const [exams, setExams] = useState([]);
+  // useEffect(() => {
+  //   // Fetch exams when the component mounts
+  //   async function loadExams() {
+  //     try {
+  //       const fetchedExams = await fetchExams();
+  //       setExams(fetchedExams);
+  //     } catch (error) {
+  //       console.error("Error fetching exams:", error);
+  //     }
+  //   }
+  //   loadExams();
+  //   console.log("fetched Exams => ", exams);
+  // }, []); // Run once when the component mounts
+
   return (
     <SafeAreaView>
       {user ? (
@@ -45,22 +71,22 @@ const HomeScreen = ({ navigation }) => {
       )}
       <FlatList
         data={categories}
-        renderItem={({ item }) => (
-          <Category image={item.image} title={item.title} />
-        )}
+        renderItem={({ item }) => <Category examCategory={item} />}
         keyExtractor={(item) => item.id}
-      // showsVerticalScrollIndicator={false}
+        // showsVerticalScrollIndicator={false}
       />
       <FlatList
         data={exams}
         renderItem={({ item }) => (
           <Button
             title={item.title}
-            onPress={() => navigation.navigate('Exam', { exam: item })}
+            onPress={() => navigation.navigate("Exam", { exam: item })}
           />
         )}
-        keyExtractor={(item, index) => (item.id ? item.id.toString() : index.toString())}
-      // showsVerticalScrollIndicator={false}
+        keyExtractor={(item, index) =>
+          item.id ? item.id.toString() : index.toString()
+        }
+        // showsVerticalScrollIndicator={false}
       />
     </SafeAreaView>
   );
