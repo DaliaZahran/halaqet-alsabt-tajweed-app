@@ -7,30 +7,29 @@ import Category from "../components/Category";
 import { fetchExams } from "../services/firebaseService"; // Import the fetchExams function
 
 const HomeScreen = () => {
-  const [exams, setExams] = useState([]);
-
-  useEffect(() => {
-    // Fetch exams when the component mounts
-    async function loadExams() {
-      try {
-        const fetchedExams = await fetchExams();
-        setExams(fetchedExams);
-        console.log("fetched Exams => ", exams);
-      } catch (error) {
-        console.error("Error fetching exams:", error);
-      }
-    }
-
-    loadExams();
-  }, []); // Run once when the component mounts
+  /** Next lines are commented to avoid calling the firebase server alot while development
+   * TODO: uncomment to use firebase server after installing a local fake server
+   */
+  // const [exams, setExams] = useState([]);
+  // useEffect(() => {
+  //   // Fetch exams when the component mounts
+  //   async function loadExams() {
+  //     try {
+  //       const fetchedExams = await fetchExams();
+  //       setExams(fetchedExams);
+  //     } catch (error) {
+  //       console.error("Error fetching exams:", error);
+  //     }
+  //   }
+  //   loadExams();
+  //   console.log("fetched Exams => ", exams);
+  // }, []); // Run once when the component mounts
 
   return (
     <SafeAreaView>
       <FlatList
         data={categories}
-        renderItem={({ item }) => (
-          <Category image={item.image} title={item.title} />
-        )}
+        renderItem={({ item }) => <Category examCategory={item} />}
         keyExtractor={(item) => item.id}
         // showsVerticalScrollIndicator={false}
       />

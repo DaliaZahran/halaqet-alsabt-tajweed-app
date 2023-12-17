@@ -1,11 +1,21 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import React from "react";
 
-const Answer = () => {
+const Answer = (props) => {
+  const isItTrue = () => {
+    if (props.answer == props.correct_answer) {
+      alert("Correct answer");
+      props.setScore((prev) => prev + 1);
+    } else {
+      alert(`Incorrect answer, the correct answer is ${props.correct_answer}`);
+    }
+    props.nextQuestion();
+  };
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.answer}>Answer</Text>
-    </View>
+    <Pressable style={styles.container} onPress={isItTrue}>
+      <Text style={styles.answer}>{props.answer}</Text>
+    </Pressable>
   );
 };
 

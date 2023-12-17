@@ -34,8 +34,6 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 
-# credentials
-authentication/
-
 package-lock.json
 src/constants/env.js
+
