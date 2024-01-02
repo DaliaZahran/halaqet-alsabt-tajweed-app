@@ -1,28 +1,14 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  onAuthStateChanged,
+  updateProfile,
+} from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { collection, getDocs } from "firebase/firestore";
-import { getStorage, ref, listAll, getDownloadURL } from 'firebase/storage';
-
-const FIREBASE_API_KEY = 'AIzaSyCuqSk349-ftAsHgf3Tm8qFjvLfVPsCQXs';
-const FIREBASE_AUTH_DOMAIN = 'quran-circle-app-23.firebaseapp.com';
-const FIREBASE_DATABASE_URL = 'https://quran-circle-app-23-default-rtdb.europe-west1.firebasedatabase.app';
-const FIREBASE_PROJECT_ID = 'quran-circle-app-23';
-const FIREBASE_STORAGE_BUCKET = 'quran-circle-app-23.appspot.com';
-const FIREBASE_MESSAGING_SENDER_ID = '843363821605';
-const FIREBASE_APP_ID = '1:843363821605:web:18039cb4631e9ffd7337cc';
-const FIREBASE_MEASUREMENT_ID = 'G-L60FDQ065T';
-
-export const firebaseConfig = {
-  apiKey: FIREBASE_API_KEY,
-  authDomain: FIREBASE_AUTH_DOMAIN,
-  databaseURL: FIREBASE_DATABASE_URL,
-  projectId: FIREBASE_PROJECT_ID,
-  storageBucket: FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: FIREBASE_MESSAGING_SENDER_ID,
-  appId: FIREBASE_APP_ID,
-  measurementId: FIREBASE_MEASUREMENT_ID,
-};
+import { getStorage, ref, listAll, getDownloadURL } from "firebase/storage";
+import firebaseConfig from "../constants/env";
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
@@ -42,12 +28,22 @@ const db = getFirestore(app);
 // });
 
 // Function to register a new user
-const registerUser = async (email, password) => {
+const registerUser = async (name, email, password) => {
   try {
-    await auth.createUserWithEmailAndPassword(email, password);
-    return { success: true };
+    const userCredential = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+
+    // Update the user's display name (name)
+    await updateProfile(userCredential.user, {
+      displayName: name,
+    });
+
+    return userCredential.user;
   } catch (error) {
-    return { success: false, error };
+    console.error("Error signing up - service:", error);
   }
 };
 
@@ -92,26 +88,62 @@ const fetchExams = async () => {
 //   }
 // };
 
-const fetchAllQuizzesFromStorage = async () => {
+// const fetchAllQuizzesFromStorage = async () => {
+//   const storage = getStorage(app);
+//   const directoryPath = "Exams/";
+
+//   try {
+//     const filesList = await listAll(ref(storage, directoryPath));
+//     console.log("filesList => ", filesList);
+
+//     const jsonDataArray = [];
+//     for (const fileRef of filesList.items) {
+//       const downloadURL = await getDownloadURL(fileRef);
+//       const response = await fetch(downloadURL);
+//       const jsonData = await response.json();
+//       jsonDataArray.push(jsonData);
+//     }
+
+//     return jsonDataArray;
+//   } catch (error) {
+//     console.error("Error fetching or parsing JSON data:", error);
+//     return null;
+//   }
+// };
+
+const fetchAllQuizzesFromStorage = async (directoryPath = "Exams/") => {
   const storage = getStorage(app);
-  const directoryPath = 'Exams/';
 
   try {
-    const filesList = await listAll(ref(storage, directoryPath));
+    const jsonDataArray = await fetchJsonData(storage, directoryPath);
+    console.log("jsonDataArray => ", filesList);
+    return jsonDataArray;
+  } catch (error) {
+    console.error("Error fetching or parsing JSON data:", error);
+    return null;
+  }
+};
 
-    const jsonDataArray = [];
-    for (const fileRef of filesList.items) {
-      const downloadURL = await getDownloadURL(fileRef);
+const fetchJsonData = async (storage, directoryPath) => {
+  const filesList = await listAll(ref(storage, directoryPath));
+  const jsonDataArray = [];
+
+  for (const item of filesList.items) {
+    if (item.isDirectory) {
+      // Recursive call for subdirectory
+      const subdirectoryPath = `${directoryPath}${item.name}/`;
+      const subdirectoryData = await fetchJsonData(storage, subdirectoryPath);
+      jsonDataArray.push(...subdirectoryData);
+    } else {
+      // Fetch and parse JSON for files
+      const downloadURL = await getDownloadURL(item);
       const response = await fetch(downloadURL);
       const jsonData = await response.json();
       jsonDataArray.push(jsonData);
     }
-
-    return jsonDataArray;
-  } catch (error) {
-    console.error('Error fetching or parsing JSON data:', error);
-    return null;
   }
+
+  return jsonDataArray;
 };
 
 export { registerUser, signInUser, fetchExams, fetchAllQuizzesFromStorage };

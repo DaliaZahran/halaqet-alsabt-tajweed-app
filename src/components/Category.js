@@ -7,7 +7,7 @@ const Category = (props) => {
   const navigation = useNavigation();
 
   const goToExam = () => {
-    navigation.navigate("Exam", { examId: props.id });
+    navigation.navigate("Exam", { exam: props.examCategory });
   };
   return (
     <Pressable style={styles.container} onPress={goToExam}>
@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 20,
-    fontWeight: '500',
+    fontWeight: "500",
     marginRight: 10,
   },
 });
