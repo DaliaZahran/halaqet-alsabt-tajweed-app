@@ -10,6 +10,7 @@ import { collection, getDocs } from "firebase/firestore";
 import { getStorage, ref, listAll, getDownloadURL } from "firebase/storage";
 import firebaseConfig from "../constants/env";
 
+console.log(firebaseConfig);
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
