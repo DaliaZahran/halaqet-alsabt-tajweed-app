@@ -19,7 +19,7 @@ import { registerUser } from "../services/firebaseService";
 
 const SignUpScreen = ({ navigation }) => {
   const dispatch = useDispatch();
-  const [name, setName] = useState(""); // New state for Name
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -46,6 +46,7 @@ const SignUpScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      <Text style={styles.titleText}>تسجيل حساب جديد</Text>
       <TextInput
         placeholder="Name"
         value={name}
@@ -65,14 +66,24 @@ const SignUpScreen = ({ navigation }) => {
         secureTextEntry
         style={styles.input}
       />
-      <Button title="Sign Up" onPress={handleSignUp} />
+
+      <TouchableOpacity onPress={handleSignUp} style={styles.signUpButton}>
+        <Text style={styles.signUpButtonText}>تسجيل حساب جديد</Text>
+      </TouchableOpacity>
       <TouchableOpacity onPress={navigateToSignIn}>
-        <Text style={styles.signInButton}>
-          Already have an account? Sign In
+        <Text style={styles.signInButtonText}>
+          ليس لديك حساب؟
+          <Text style={styles.signInButtonSubtext}> تسجيل حساب جديد</Text>
         </Text>
       </TouchableOpacity>
     </View>
   );
+};
+
+const commonSignInTextStyle = {
+  fontSize: 15,
+  fontStyle: "normal",
+  fontWeight: "400",
 };
 
 const styles = StyleSheet.create({
@@ -81,16 +92,44 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     padding: 16,
   },
+  titleText: {
+    fontSize: 24,
+    textAlign: "right",
+    margin: 16,
+  },
   input: {
     marginBottom: 12,
-    padding: 10,
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    borderRadius: 10,
     borderWidth: 1,
+    borderColor: "rgba(0, 0, 0, 0.15)",
+    textAlign: "right",
   },
-  signInButton: {
-    marginTop: 16,
-    color: "blue",
+  signUpButton: {
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    justifyContent: "center",
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "rgba(0, 0, 0, 0.15)",
+    backgroundColor: "#9A98FF",
+    marginTop: 4,
+    marginBottom: 12,
+  },
+  signUpButtonText: {
+    fontSize: 16,
+    color: "#fff",
     textAlign: "center",
-    textDecorationLine: "underline",
+  },
+  signInButtonText: {
+    ...commonSignInTextStyle,
+    color: "#333",
+    textAlign: "center",
+  },
+  signInButtonSubtext: {
+    ...commonSignInTextStyle,
+    color: "#6E85E3",
   },
 });
 
