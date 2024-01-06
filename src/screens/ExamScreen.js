@@ -6,25 +6,12 @@ import {
   StyleSheet,
   TouchableOpacity,
   Button,
+  Dimensions,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
-import Answer from "../components/Answer";
-import Question from "../components/Question";
-
-const ProgressBarBubbles = ({ totalQuestions, currentQuestion }) => {
-  const bubbles = Array.from({ length: totalQuestions }, (_, index) => (
-    <View
-      key={index}
-      style={[
-        styles.bubble,
-        index === currentQuestion ? styles.activeBubble : null,
-      ]}
-    />
-  ));
-
-  return <View style={styles.progressBar}>{bubbles}</View>;
-};
+const windowHeight = Dimensions.get("window").height;
+const windowWidth = Dimensions.get("window").width;
 
 const ExamScreen = ({ route }) => {
   const { exam } = route.params;
@@ -60,7 +47,12 @@ const ExamScreen = ({ route }) => {
     return `${scorePercentage.toFixed(2)}%`;
   };
 
+  const handleExit = () => {
+    navigation.goBack();
+  };
+
   const handleSubmission = () => {
+    // alert("Are you sure?");
     const score = calculateScore();
     navigation.navigate("Result", {
       score,
@@ -81,77 +73,69 @@ const ExamScreen = ({ route }) => {
     }
   };
 
+  const ProgressBarBubbles = ({ totalQuestions, currentQuestion }) => {
+    const bubbles = Array.from({ length: totalQuestions }, (_, index) => (
+      <View
+        key={index}
+        style={[
+          styles.bubble,
+          index === currentQuestion ? styles.activeBubble : null,
+        ]}
+      />
+    ));
+
+    return <View style={styles.progressBar}>{bubbles}</View>;
+  };
+
+  const renderChoice = ({ item: choice, index: choiceIndex }) => (
+    <TouchableOpacity
+      onPress={() => handleAnswerSelection(choiceIndex)}
+      style={[
+        styles.choiceContainer,
+        selectedAnswers[currentQuestion] === choiceIndex
+          ? styles.selectedAnswers
+          : null,
+      ]}
+    >
+      <Text style={styles.choice}>{choice}</Text>
+    </TouchableOpacity>
+  );
+
+  const renderNavigationButton = (text, onPress) => (
+    <TouchableOpacity style={styles.navigationButton} onPress={onPress}>
+      <Text style={styles.navigationButtonsText}>{text}</Text>
+    </TouchableOpacity>
+  );
+
   return (
     <View style={styles.container}>
-      <Text style={styles.examTitle}>{exam.title}</Text>
-      <View>
+      <View style={styles.curvedBackgroundBox}>
+        <Text style={styles.examTitleText}>{exam.title}</Text>
         <ProgressBarBubbles
           totalQuestions={exam.questions.length}
           currentQuestion={currentQuestion}
         />
-        <View style={styles.rowContainer}>
-          <TouchableOpacity
-            onPress={handlePreviousQuestion}
-            disabled={currentQuestion === 0}
-            style={{ flex: 1 }}
-          >
-            <Text
-              style={[
-                styles.navigationText,
-                { color: currentQuestion === 0 ? "#dbd8e3" : "black" },
-              ]}
-            >
-              {"<"}
-            </Text>
-          </TouchableOpacity>
-          <View style={{ flex: 7 }}>
-            <View style={styles.questionContainer}>
-              <Question
-                question={exam.questions[currentQuestion].questionBody}
-              />
-              <FlatList
-                data={exam.questions[currentQuestion].choices}
-                renderItem={({ item: choice, index: choiceIndex }) => (
-                  <TouchableOpacity
-                    onPress={() => handleAnswerSelection(choiceIndex)}
-                    style={[
-                      styles.choiceContainer,
-                      selectedAnswers[currentQuestion] === choiceIndex
-                        ? styles.selectedAnswers
-                        : null,
-                    ]}
-                  >
-                    <Answer answer={choice} index={choiceIndex} />
-                  </TouchableOpacity>
-                )}
-                keyExtractor={(choice, choiceIndex) => choiceIndex.toString()}
-              />
-            </View>
-          </View>
-          <TouchableOpacity
-            onPress={handleNextQuestion}
-            disabled={currentQuestion === exam.questions.length - 1}
-            style={{ flex: 1 }}
-          >
-            <Text
-              style={[
-                styles.navigationText,
-                {
-                  color:
-                    currentQuestion === exam.questions.length - 1
-                      ? "#dbd8e3"
-                      : "black",
-                },
-              ]}
-            >
-              {">"}
-            </Text>
-          </TouchableOpacity>
+        <View style={styles.questionBodyContainer}>
+          <Text style={styles.questionBodyText}>
+            {exam.questions[currentQuestion].questionBody}
+          </Text>
         </View>
       </View>
-      <TouchableOpacity style={styles.submitButton} onPress={handleSubmission}>
-        <Text style={styles.submitButtonText}>Submit</Text>
-      </TouchableOpacity>
+      <View>
+        <FlatList
+          data={exam.questions[currentQuestion].choices}
+          renderItem={renderChoice}
+          keyExtractor={(choice, choiceIndex) => choiceIndex.toString()}
+        />
+        <View style={styles.navigationButtons}>
+          {currentQuestion === 0
+            ? renderNavigationButton("الخروج", handleExit)
+            : renderNavigationButton("السابق", handlePreviousQuestion)}
+          {exam.questions.length !== currentQuestion + 1
+            ? renderNavigationButton("التالي", handleNextQuestion)
+            : renderNavigationButton("تسليم الاختبار", handleSubmission)}
+        </View>
+      </View>
     </View>
   );
 };
@@ -159,156 +143,94 @@ const ExamScreen = ({ route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingBottom: 50,
-    paddingTop: 60,
-    paddingHorizontal: 16,
-    justifyContent: "space-between", // Align content vertically
   },
-  examTitle: {
-    fontSize: 24,
+  curvedBackgroundBox: {
+    backgroundColor: "#6E85E3",
+    width: "100%",
+    height: windowHeight / 2,
+    borderBottomLeftRadius: 50,
+    borderBottomRightRadius: 50,
+    overflow: "hidden",
+    justifyContent: "flex-start", // Align ProgressBarBubbles to the top
+    marginBottom: 18,
+  },
+  examTitleText: {
+    marginTop: 80,
+    marginBottom: 24,
+    // paddingTop: 60,
+    fontSize: 28,
+    color: "#fff",
+    fontFamily: "Helvetica Neue",
     fontWeight: "bold",
-    marginBottom: 16,
+    textAlign: "center",
+  },
+  questionBodyContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 24,
+  },
+  questionBodyText: {
+    color: "white",
+    fontSize: 28,
+    fontWeight: "bold",
+    textAlign: "center",
   },
   progressBar: {
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    margin: 20,
+    marginHorizontal: 40,
+    // paddingTop: 10,
   },
   bubble: {
     width: 10,
     height: 10,
     borderRadius: 5,
-    backgroundColor: "#3498db",
+    backgroundColor: "#FF8058",
     marginHorizontal: 5,
   },
   activeBubble: {
-    backgroundColor: "#2ecc71",
-  },
-  questionContainer: {
-    padding: 16,
-    marginHorizontal: 15,
-    backgroundColor: "white",
-    borderRadius: 10,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  rowContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    backgroundColor: "#fff",
   },
   choiceContainer: {
-    backgroundColor: "white",
+    backgroundColor: "#BFCFF7",
     padding: 10,
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 10,
-    borderWidth: 2,
-    borderColor: "#3498db",
     marginVertical: 10,
+    marginHorizontal: 40,
+    minHeight: 48,
   },
   selectedAnswers: {
     borderColor: "#2ecc71",
     backgroundColor: "#c1f2bc",
+    borderWidth: 1,
   },
-  navigationText: {
-    fontSize: 50,
-    color: "black",
+  choice: {
+    fontSize: 16,
   },
-  submitButton: {
+  navigationButtons: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginHorizontal: 40,
+    width: windowWidth - 80,
+  },
+  navigationButton: {
     alignSelf: "center",
-    backgroundColor: "#3498db",
-    borderRadius: 30,
-    paddingVertical: 15,
-    paddingHorizontal: 120,
+    backgroundColor: "#2F80ED",
+    borderRadius: 10,
+    paddingVertical: 10,
     marginVertical: 20,
+    width: (windowWidth - 80 - 24) / 2,
   },
-  submitButtonText: {
+  navigationButtonsText: {
     color: "white",
     fontSize: 18,
     fontWeight: "bold",
+    textAlign: "center",
   },
 });
 
 export default ExamScreen;
-
-// Dalia Version
-// import { Button, SafeAreaView, StyleSheet, Text, View } from "react-native";
-// import Answer from "../components/Answer";
-// import Question from "../components/Question";
-// import React, { useState, useEffect } from "react";
-// import { useNavigation, useRoute } from "@react-navigation/native";
-
-// import { questions } from "../constants/dummy_data";
-
-// const ExamScreen = () => {
-//   // const [questions, setQuestions] = useState(questions);
-//   const [currentQuestion, setCurrentQuestion] = useState(0);
-//   const [score, setScore] = useState(0);
-//   console.log(questions);
-
-//   const navigation = useNavigation();
-//   const route = useRoute();
-//   let allOptions = [];
-
-//   // will be used to retrieve exam questions
-//   const examId = route.params.examId;
-
-//   const nextQuestion = () => {
-//     if (currentQuestion < questions.length - 1) {
-//       setCurrentQuestion(currentQuestion + 1);
-//     } else {
-//       navigation.navigate("Finish", { score: score });
-//     }
-//   };
-
-//   if (questions) {
-//     allOptions = [
-//       ...questions[currentQuestion].incorrect_answers,
-//       questions[currentQuestion].correct_answer,
-//     ];
-//     allOptions = allOptions.sort(() => 0.5 - Math.random());
-//   }
-
-//   return (
-//     <SafeAreaView>
-//       <Text style={styles.score}>Score: {score} </Text>
-//       {questions.length > 0 ? (
-//         <>
-//           {questions && (
-//             <Question question={questions[currentQuestion].title} />
-//           )}
-
-//           {allOptions &&
-//             allOptions.map((item, index) => (
-//               <Answer
-//                 answer={item}
-//                 key={index}
-//                 correct_answer={questions[currentQuestion].correct_answer}
-//                 setScore={setScore}
-//                 nextQuestion={nextQuestion}
-//               />
-//             ))}
-//         </>
-//       ) : (
-//         <Text>Please Wait</Text>
-//       )}
-//     </SafeAreaView>
-//   );
-// };
-
-// export default ExamScreen;
-
-// const styles = StyleSheet.create({
-//   score: {
-//     fontSize: 30,
-//     color: "green",
-//     fontWeight: "bold",
-//     marginVertical: 10,
-//     marginLeft: 10,
-//   },
-// });

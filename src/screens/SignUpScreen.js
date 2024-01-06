@@ -72,8 +72,8 @@ const SignUpScreen = ({ navigation }) => {
       </TouchableOpacity>
       <TouchableOpacity onPress={navigateToSignIn}>
         <Text style={styles.signInButtonText}>
-          ليس لديك حساب؟
-          <Text style={styles.signInButtonSubtext}> تسجيل حساب جديد</Text>
+          لديك حساب؟
+          <Text style={styles.signInButtonSubtext}> تسجيل الدخول</Text>
         </Text>
       </TouchableOpacity>
     </View>
