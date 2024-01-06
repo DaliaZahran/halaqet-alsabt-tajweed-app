@@ -121,7 +121,7 @@ const ExamScreen = ({ route }) => {
           </Text>
         </View>
       </View>
-      <View>
+      <View style={styles.choicesAndNavBtnsContainer}>
         <FlatList
           data={exam.questions[currentQuestion].choices}
           renderItem={renderChoice}
@@ -216,6 +216,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginHorizontal: 40,
     width: windowWidth - 80,
+    bottom: 50,
   },
   navigationButton: {
     alignSelf: "center",
@@ -230,6 +231,10 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     textAlign: "center",
+  },
+  choicesAndNavBtnsContainer: {
+    flex: 1,
+    justifyContent: "space-between",
   },
 });
 
