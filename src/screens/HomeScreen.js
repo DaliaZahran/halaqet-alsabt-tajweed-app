@@ -124,6 +124,7 @@ const styles = StyleSheet.create({
     fontSize: 32,
     textAlign: "center",
     paddingBottom: 15,
+    fontFamily: "cortoba",
   },
   challengeBoxtext: {
     color: "white",
@@ -150,6 +151,7 @@ const styles = StyleSheet.create({
   },
   ExamsTitle: {
     fontSize: 32,
+    fontFamily: "cortoba",
   },
   slider: {
     flexDirection: "row-reverse",

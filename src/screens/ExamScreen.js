@@ -157,12 +157,10 @@ const styles = StyleSheet.create({
   examTitleText: {
     marginTop: 80,
     marginBottom: 24,
-    // paddingTop: 60,
     fontSize: 28,
     color: "#fff",
-    fontFamily: "Helvetica Neue",
-    fontWeight: "bold",
     textAlign: "center",
+    fontFamily: "cortoba",
   },
   questionBodyContainer: {
     flex: 1,
