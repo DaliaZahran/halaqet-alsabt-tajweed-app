@@ -31,7 +31,7 @@ const SignUpScreen = ({ navigation }) => {
         console.log("userCredential - screen => ", user);
         console.log("User registered successfully!");
         dispatch(signIn(user));
-        navigation.navigate("Home");
+        navigation.replace("Home");
       } else {
         console.log("User undefined => ", user);
       }

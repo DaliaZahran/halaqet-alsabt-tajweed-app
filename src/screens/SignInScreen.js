@@ -39,7 +39,7 @@ const SignInScreen = ({ navigation }) => {
       dispatch(signIn(userCredential.user));
 
       // Optionally, you can perform additional actions after sign-in, such as navigating to the home screen
-      navigation.navigate("Home");
+      navigation.replace("Home");
 
       console.log("User signed in successfully!");
     } catch (error) {

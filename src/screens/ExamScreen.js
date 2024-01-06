@@ -54,7 +54,7 @@ const ExamScreen = ({ route }) => {
   const handleSubmission = () => {
     // alert("Are you sure?");
     const score = calculateScore();
-    navigation.navigate("Result", {
+    navigation.replace("Result", {
       score,
       exam,
       selectedAnswers,
