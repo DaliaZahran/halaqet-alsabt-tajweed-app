@@ -48,19 +48,19 @@ const SignUpScreen = ({ navigation }) => {
     <View style={styles.container}>
       <Text style={styles.titleText}>تسجيل حساب جديد</Text>
       <TextInput
-        placeholder="Name"
+        placeholder="الاسم"
         value={name}
         onChangeText={(text) => setName(text)}
         style={styles.input}
       />
       <TextInput
-        placeholder="Email"
+        placeholder="البريد الالكتروني"
         value={email}
         onChangeText={(text) => setEmail(text)}
         style={styles.input}
       />
       <TextInput
-        placeholder="Password"
+        placeholder="كلمة السر"
         value={password}
         onChangeText={(text) => setPassword(text)}
         secureTextEntry
